@@ -5,6 +5,35 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.1.0] - 2026-01-26
+
+### ✨ Adicionado
+
+#### Gestão de Veículos
+- **Edição de Veículos**: Nova aba "Editar/Excluir" para modificar veículos cadastrados
+- **Exclusão de Veículos**: Funcionalidade de exclusão com confirmação obrigatória
+- Validação de placa única ao editar
+- Verificação de viagens vinculadas antes de permitir exclusão
+- Feedback visual aprimorado com emojis
+
+#### Gestão de Motoristas
+- **Edição de Motoristas**: Nova aba "Editar/Excluir" para modificar motoristas cadastrados
+- **Exclusão de Motoristas**: Funcionalidade de exclusão com confirmação obrigatória
+- Validação de CPF e CNH únicos ao editar
+- Verificação de viagens vinculadas antes de permitir exclusão
+- Validações robustas para CPF (11 dígitos) e CNH (mínimo 9 dígitos)
+
+### 🔒 Segurança
+- Confirmação obrigatória via checkbox antes de excluir registros
+- Proteção contra exclusão de veículos/motoristas com viagens vinculadas
+- Validação de unicidade de campos críticos (Placa, CPF, CNH) durante edição
+
+### 🎨 Melhorias de Interface
+- Layout em 3 abas para melhor organização (Lista, Adicionar, Editar/Excluir)
+- Mensagens de feedback com emojis para melhor UX
+- Animações (balloons) em operações bem-sucedidas
+- Divisão clara entre seção de edição e exclusão
+
 ## [1.0.0] - 2026-01-26
 
 ### 🎉 Lançamento Inicial

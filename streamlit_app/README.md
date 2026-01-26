@@ -48,6 +48,8 @@ Sistema web moderno e intuitivo para gestão completa de frotas de veículos, pe
 ### 🚙 Gestão de Veículos
 - Listagem completa de veículos
 - Cadastro de novos veículos
+- **✨ Edição de veículos cadastrados**
+- **✨ Exclusão de veículos (com proteção contra viagens vinculadas)**
 - Validação de placas únicas
 - Controle de status (Ativo, Manutenção, Inativo)
 - Informações: Placa, Modelo, Capacidade, Tipo
@@ -55,7 +57,8 @@ Sistema web moderno e intuitivo para gestão completa de frotas de veículos, pe
 ### 👨‍✈️ Gestão de Motoristas
 - Listagem de motoristas cadastrados
 - Cadastro com validações robustas
-- Atualização rápida de status
+- **✨ Edição de motoristas cadastrados**
+- **✨ Exclusão de motoristas (com proteção contra viagens vinculadas)**
 - Validação de CPF (11 dígitos)
 - Validação de CNH (mínimo 9 dígitos)
 - Status: Ativo, Férias, Afastado
@@ -298,11 +301,12 @@ O script `add_sample_data.py` cria dados realistas para teste:
 ## 🚧 Roadmap
 
 ### Versão 2.0
-- [ ] Edição e exclusão de registros
+- [x] ~~Edição e exclusão de registros~~ ✅ **Implementado na v1.1.0**
 - [ ] Upload de documentos (CNH, CRLV)
 - [ ] Notificações de CNH vencida
 - [ ] Controle de manutenções preventivas
 - [ ] Gestão de combustível e custos
+- [ ] Edição e exclusão de viagens
 
 ### Versão 3.0
 - [ ] Sistema de permissões granular
