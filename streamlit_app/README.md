@@ -159,11 +159,39 @@ http://localhost:8501
 
 ### Fluxo de Trabalho Recomendado
 
-1. **Cadastre Veículos** → Página "Veículos"
-2. **Cadastre Motoristas** → Página "Motoristas"
-3. **Registre Viagens** → Página "Viagens" → Aba "Nova Viagem"
-4. **Acompanhe Viagens Ativas** → Página "Viagens" → Aba "Viagens Ativas"
-5. **Gere Relatórios** → Página "Relatórios"
+1. **Cadastre Veículos** → Página **🚗 Veículos**
+2. **Cadastre Motoristas** → Página **👨‍✈️ Motoristas**
+3. **Registre Viagens** → Página **🗺️ Viagens** ➔ Aba "Nova Viagem"
+4. **Acompanhe Viagens Ativas** → Página **🗺️ Viagens** ➔ Aba "Viagens Ativas"
+5. **Gere Relatórios** → Página **📈 Relatórios**
+
+---
+
+## 📦 Como Gerar Executável (.exe) e Instalador
+
+Você pode compilar o projeto em um executável independente que não exige a instalação manual do Python na máquina de destino.
+
+### Método A: Execução Local Rápida (`iniciar.bat`)
+Para usuários locais, basta dar dois cliques no arquivo **`iniciar.bat`**. Ele criará automaticamente o ambiente virtual, instalará as dependências necessárias e iniciará a aplicação.
+
+### Método B: Executável Autônomo (PyInstaller)
+Para gerar uma pasta independente com o executável e todas as dependências embutidas:
+1. Com o ambiente virtual ativo, certifique-se de que o PyInstaller está instalado:
+   ```bash
+   pip install pyinstaller
+   ```
+2. Compile a aplicação usando o script auxiliar [run_app.py](file:///c:/Users/KENIELLY/Desktop/gerenciamento/streamlit_app/run_app.py):
+   ```bash
+   python -m PyInstaller --name="GestaoDeFrota" --onedir --clean --add-data "pages;pages" --add-data ".streamlit;.streamlit" --add-data "main.py;." --add-data "fleet.db;." --collect-all streamlit run_app.py
+   ```
+3. O aplicativo autônomo será gerado em `dist/GestaoDeFrota/GestaoDeFrota.exe`.
+
+### Método C: Criar um Instalador Windows (.exe) com Inno Setup
+Para distribuir o sistema como um instalador convencional que instala na pasta de programas do usuário, cria atalhos na Área de Trabalho e adiciona opção de desinstalação:
+1. Instale o [Inno Setup](https://jrsoftware.org/isdl.php).
+2. Abra o arquivo de configuração **[installer_config.iss](file:///c:/Users/KENIELLY/Desktop/gerenciamento/streamlit_app/installer_config.iss)**.
+3. No painel superior, clique em **Build** ➔ **Compile** (ou pressione `Ctrl + F9`).
+4. O instalador unificado estará pronto em `dist/Instalador_Gestao_Frota.exe`.
 
 ---
 
@@ -195,15 +223,18 @@ streamlit_app/
 ├── auth.py                 # Funções de autenticação (hash/verify)
 ├── seed.py                 # Script para criar usuário admin
 ├── add_sample_data.py      # Script para dados de exemplo
+├── run_app.py              # Script de entrada para empacotamento com PyInstaller
+├── iniciar.bat             # Inicializador automático em 1-clique
+├── installer_config.iss    # Script de configuração do Inno Setup
 ├── requirements.txt        # Dependências do projeto
 ├── README.md              # Este arquivo
 │
 ├── pages/                 # Páginas da aplicação
-│   ├── 1_Dashboard.py     # Dashboard com métricas
-│   ├── 2_Vehicles.py      # Gestão de veículos
-│   ├── 3_Drivers.py       # Gestão de motoristas
-│   ├── 4_Trips.py         # Gestão de viagens
-│   └── 5_Reports.py       # Relatórios e análises
+│   ├── 1_📊_Dashboard.py  # Dashboard com métricas
+│   ├── 2_🚗_Veículos.py   # Gestão de veículos
+│   ├── 3_👨‍✈️_Motoristas.py  # Gestão de motoristas
+│   ├── 4_🗺️_Viagens.py     # Gestão de viagens
+│   └── 5_📈_Relatórios.py  # Relatórios e análises
 │
 └── fleet.db               # Banco de dados SQLite (criado após seed.py)
 ```

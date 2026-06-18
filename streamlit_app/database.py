@@ -4,8 +4,26 @@ from sqlalchemy.sql import func
 import os
 
 # Database Setup
-DATABASE_URL = "sqlite:///fleet.db"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# Lê a variável de ambiente DATABASE_URL (definida no Streamlit Cloud Secrets)
+# ou usa o SQLite local como fallback para desenvolvimento
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///fleet.db")
+
+# Correção necessária para drivers PostgreSQL modernos (Neon, Heroku, etc.)
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+# Ajusta os parâmetros de conexão conforme o banco de dados utilizado
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False}
+    )
+else:
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True  # Valida a conexão antes de usá-la (essencial para conexões remotas)
+    )
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
