@@ -1,0 +1,334 @@
+<div class="page-header">
+  <div>
+    <h1>🗺️ Gestão de Viagens</h1>
+    <p class="subtitle">Planeje, monitore e exporte os registros de deslocamento</p>
+  </div>
+</div>
+
+<!-- Tabs Navigation -->
+<div class="tabs-nav">
+  <button 
+    class="tab-btn" 
+    [class.active]="activeTab() === 'active'" 
+    (click)="setTab('active')"
+  >
+    Viagens Ativas
+  </button>
+  <button 
+    class="tab-btn" 
+    [class.active]="activeTab() === 'history'" 
+    (click)="setTab('history')"
+  >
+    Histórico
+  </button>
+  <button 
+    class="tab-btn" 
+    [class.active]="activeTab() === 'new'" 
+    (click)="setTab('new')"
+  >
+    Registrar Nova
+  </button>
+</div>
+
+<!-- Success and Error Messages -->
+@if (successMessage()) {
+  <div class="alert success-alert">
+    <span class="alert-icon">✅</span>
+    <span class="alert-text">{{ successMessage() }}</span>
+    <button class="alert-close" (click)="clearMessages()">×</button>
+  </div>
+}
+
+@if (errorMessage()) {
+  <div class="alert error-alert">
+    <span class="alert-icon">❌</span>
+    <span class="alert-text">{{ errorMessage() }}</span>
+    <button class="alert-close" (click)="clearMessages()">×</button>
+  </div>
+}
+
+<!-- Tab Contents -->
+<div class="tab-content-panel">
+
+  <!-- Active Trips Tab (Cards view) -->
+  @if (activeTab() === 'active') {
+    <div class="panel-section">
+      <h2>Viagens em Andamento</h2>
+      
+      @if (loading()) {
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Carregando viagens...</p>
+        </div>
+      } @else if (activeTrips().length === 0) {
+        <div class="empty-state">
+          <span class="empty-icon">🗺️</span>
+          <p>Nenhuma viagem ativa no momento.</p>
+        </div>
+      } @else {
+        <div class="trips-grid">
+          @for (trip of activeTrips(); track trip.id) {
+            <div class="trip-card">
+              <div class="trip-card-header">
+                <h3>🚗 Viagem #{{ trip.id }}</h3>
+                <span class="route-header">{{ trip.origin }} → {{ trip.destination }}</span>
+              </div>
+              
+              <div class="trip-card-body">
+                <div class="info-group">
+                  <div class="info-row">
+                    <span class="label">Veículo:</span>
+                    <span class="val">{{ trip.vehicle.model }} ({{ trip.vehicle.plate }})</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Motorista:</span>
+                    <span class="val">{{ trip.driver.name }}</span>
+                  </div>
+                </div>
+                
+                <div class="info-group">
+                  <div class="info-row">
+                    <span class="label">Data Início:</span>
+                    <span class="val">{{ trip.startDate | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Distância:</span>
+                    <span class="val">{{ trip.distanceKm }} km</span>
+                  </div>
+                </div>
+
+                <div class="info-group">
+                  <div class="info-row">
+                    <span class="label">Status Atual:</span>
+                    <span class="status-badge" [class]="trip.status.toLowerCase()">
+                      {{ trip.status }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="trip-card-footer">
+                <div class="update-status-row">
+                  <select #newStatusSelect [value]="trip.status">
+                    @for (s of statusOptions; track s) {
+                      <option [value]="s">{{ s }}</option>
+                    }
+                  </select>
+                  <button 
+                    class="btn btn-update" 
+                    (click)="updateStatus(trip.id, newStatusSelect.value)"
+                  >
+                    Atualizar
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- History Tab (Table and Filters view) -->
+  @if (activeTab() === 'history') {
+    <div class="panel-section">
+      <h2>Histórico de Viagens</h2>
+      
+      <!-- Filters Panel -->
+      <div class="filters-panel">
+        <div class="filter-group">
+          <label>Filtrar por Status:</label>
+          <div class="checkbox-filters">
+            @for (s of statusOptions; track s) {
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox" 
+                  [checked]="filterStatus.includes(s)"
+                  (change)="toggleStatusFilter(s)"
+                />
+                {{ s }}
+              </label>
+            }
+          </div>
+        </div>
+
+        <div class="filter-group date-filter-group">
+          <label for="filter-date">Filtrar por Data (a partir de):</label>
+          <input 
+            type="date" 
+            id="filter-date" 
+            [(ngModel)]="filterDate" 
+            (ngModelChange)="loadHistoryTrips()"
+          />
+        </div>
+      </div>
+
+      @if (loading()) {
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Carregando histórico...</p>
+        </div>
+      } @else if (historyTrips().length === 0) {
+        <div class="empty-state">
+          <p>Nenhuma viagem encontrada com os filtros selecionados.</p>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Origem</th>
+                <th>Destino</th>
+                <th>Veículo</th>
+                <th>Motorista</th>
+                <th>Data Início</th>
+                <th>Data Fim</th>
+                <th>Distância (km)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (t of historyTrips(); track t.id) {
+                <tr>
+                  <td>{{ t.id }}</td>
+                  <td>{{ t.origin }}</td>
+                  <td>{{ t.destination }}</td>
+                  <td><strong>{{ t.vehicle.model }}</strong> ({{ t.vehicle.plate }})</td>
+                  <td>{{ t.driver.name }}</td>
+                  <td>{{ t.startDate | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td>{{ t.endDate ? (t.endDate | date:'dd/MM/yyyy HH:mm') : 'N/A' }}</td>
+                  <td>{{ t.distanceKm }} km</td>
+                  <td>
+                    <span class="status-badge" [class]="t.status.toLowerCase()">
+                      {{ t.status }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="export-actions">
+          <button class="btn btn-export" (click)="exportCsv()">
+            📥 Exportar para CSV
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Register Trip Tab -->
+  @if (activeTab() === 'new') {
+    <div class="panel-section max-width-800">
+      <h2>Registrar Nova Viagem</h2>
+      
+      @if (availableVehicles().length === 0) {
+        <div class="alert warning-alert">
+          <span class="alert-icon">⚠️</span>
+          <span class="alert-text">Nenhum veículo ativo disponível no momento. Ative veículos primeiro.</span>
+        </div>
+      } @else if (availableDrivers().length === 0) {
+        <div class="alert warning-alert">
+          <span class="alert-icon">⚠️</span>
+          <span class="alert-text">Nenhum motorista ativo disponível no momento. Ative motoristas primeiro.</span>
+        </div>
+      } @else {
+        <form (ngSubmit)="onCreate()" class="standard-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="origin">Origem *</label>
+              <input 
+                type="text" 
+                id="origin" 
+                name="origin" 
+                [(ngModel)]="origin" 
+                required 
+                placeholder="Ex: São Paulo"
+              />
+            </div>
+            <div class="form-group">
+              <label for="destination">Destino *</label>
+              <input 
+                type="text" 
+                id="destination" 
+                name="destination" 
+                [(ngModel)]="destination" 
+                required 
+                placeholder="Ex: Rio de Janeiro"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="distance">Distância (km) *</label>
+              <input 
+                type="number" 
+                id="distance" 
+                name="distance" 
+                [(ngModel)]="distanceKm" 
+                min="0.1" 
+                step="0.1" 
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="vehicle">Veículo *</label>
+              <select id="vehicle" name="vehicle" [(ngModel)]="selectedVehicleId" required>
+                <option value="" disabled selected>Selecione um veículo</option>
+                @for (v of availableVehicles(); track v.id) {
+                  <option [value]="v.id">{{ v.model }} ({{ v.plate }})</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="driver">Motorista *</label>
+              <select id="driver" name="driver" [(ngModel)]="selectedDriverId" required>
+                <option value="" disabled selected>Selecione um motorista</option>
+                @for (d of availableDrivers(); track d.id) {
+                  <option [value]="d.id">{{ d.name }} - CNH: {{ d.cnh }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="initial-status">Status Inicial</label>
+              <select id="initial-status" name="initialStatus" [(ngModel)]="initialStatus">
+                <option value="PLANEJADA">PLANEJADA</option>
+                <option value="EM_ANDAMENTO">EM_ANDAMENTO</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="start-date">Data de Início</label>
+              <input 
+                type="date" 
+                id="start-date" 
+                name="startDate" 
+                [(ngModel)]="startDate"
+              />
+            </div>
+            <div class="form-group">
+              <label for="start-time">Hora de Início</label>
+              <input 
+                type="time" 
+                id="start-time" 
+                name="startTime" 
+                [(ngModel)]="startTime"
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Registrar Viagem</button>
+        </form>
+      }
+    </div>
+  }
+
+</div>

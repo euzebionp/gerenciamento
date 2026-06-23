@@ -1,7 +1,0 @@
-streamlit
-sqlalchemy
-pandas
-bcrypt
-watchdog
-plotly
-psycopg2-binary>=2.9.0

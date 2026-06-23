@@ -1,0 +1,54 @@
+<div class="layout-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="logo-icon">🚗</span>
+      <span class="logo-text">Gestão de Frota</span>
+    </div>
+
+    <div class="user-profile">
+      <div class="avatar">👤</div>
+      <div class="user-info">
+        <span class="username">{{ username }}</span>
+        <span class="role">Perfil: {{ role }}</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+      <a routerLink="/vehicles" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">🚙</span>
+        <span class="nav-label">Veículos</span>
+      </a>
+      <a routerLink="/drivers" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">👨‍✈️</span>
+        <span class="nav-label">Motoristas</span>
+      </a>
+      <a routerLink="/trips" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">🗺️</span>
+        <span class="nav-label">Viagens</span>
+      </a>
+      <a routerLink="/reports" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📈</span>
+        <span class="nav-label">Relatórios</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button (click)="logout()" class="btn-logout">
+        <span class="logout-icon">🚪</span>
+        <span>Sair</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

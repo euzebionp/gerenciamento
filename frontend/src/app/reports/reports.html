@@ -1,0 +1,263 @@
+<div class="page-header">
+  <div>
+    <h1>📈 Relatórios e Análises</h1>
+    <p class="subtitle">Acompanhe os principais indicadores de desempenho da frota</p>
+  </div>
+</div>
+
+<!-- Filters Panel -->
+<div class="filters-panel">
+  <div class="filter-row">
+    <div class="filter-group">
+      <label for="start-date">Data Inicial</label>
+      <input 
+        type="date" 
+        id="start-date" 
+        [(ngModel)]="startDate" 
+        (ngModelChange)="loadAnalytics()"
+      />
+    </div>
+    <div class="filter-group">
+      <label for="end-date">Data Final</label>
+      <input 
+        type="date" 
+        id="end-date" 
+        [(ngModel)]="endDate" 
+        (ngModelChange)="loadAnalytics()"
+      />
+    </div>
+  </div>
+</div>
+
+@if (loading()) {
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Carregando relatórios...</p>
+  </div>
+} @else {
+  
+  <!-- KPIs Panel -->
+  <div class="kpis-section">
+    <h3>📈 Indicadores Principais (no período)</h3>
+    <div class="kpis-grid">
+      <div class="kpi-card">
+        <span class="label">Total de Viagens</span>
+        <span class="value">{{ totalTrips() }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="label">Viagens Concluídas</span>
+        <span class="value">{{ completedTrips() }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="label">Distância Total (km)</span>
+        <span class="value">{{ totalDistance() | number:'1.1-1' }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="label">Veículos Ativos</span>
+        <span class="value">{{ activeVehicles() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts & Analysis Panel -->
+  <div class="tab-content-panel">
+    
+    <!-- Inner Tabs Navigation -->
+    <div class="inner-tabs">
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab() === 'status'" 
+        (click)="setTab('status')"
+      >
+        Status das Viagens
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab() === 'vehicles'" 
+        (click)="setTab('vehicles')"
+      >
+        Por Veículo
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab() === 'drivers'" 
+        (click)="setTab('drivers')"
+      >
+        Por Motorista
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab() === 'trends'" 
+        (click)="setTab('trends')"
+      >
+        Tendências
+      </button>
+    </div>
+
+    <!-- Inner Tab Contents -->
+    <div class="inner-tab-content">
+      
+      <!-- Status Tab -->
+      <div [style.display]="activeTab() === 'status' ? 'block' : 'none'">
+        <h3>Distribuição por Status</h3>
+        <div class="chart-wrapper pie-chart-container">
+          <canvas id="statusChart"></canvas>
+        </div>
+
+        <div class="table-container margin-top-30">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Quantidade</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of statusTable; track row.status) {
+                <tr>
+                  <td><strong>{{ row.status }}</strong></td>
+                  <td>{{ row.count }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Vehicles Tab -->
+      <div [style.display]="activeTab() === 'vehicles' ? 'block' : 'none'">
+        <h3>Análise por Veículo</h3>
+        
+        <div class="charts-double-row">
+          <div class="chart-container">
+            <h4>Número de Viagens por Veículo</h4>
+            <div class="chart-wrapper">
+              <canvas id="vehicleTripsChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-container">
+            <h4>Distância Total por Veículo</h4>
+            <div class="chart-wrapper">
+              <canvas id="vehicleDistanceChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-container margin-top-30">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Veículo</th>
+                <th>Viagens</th>
+                <th>Distância (km)</th>
+                <th>Concluídas</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of vehiclesTable; track row.vehicle) {
+                <tr>
+                  <td><strong>{{ row.vehicle }}</strong></td>
+                  <td>{{ row.trips }}</td>
+                  <td>{{ row.distance | number:'1.1-1' }} km</td>
+                  <td>{{ row.completed }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Drivers Tab -->
+      <div [style.display]="activeTab() === 'drivers' ? 'block' : 'none'">
+        <h3>Análise por Motorista</h3>
+        
+        <div class="chart-container-large">
+          <h4>Viagens por Motorista</h4>
+          <div class="chart-wrapper horizontal-bar-container">
+            <canvas id="driverTripsChart"></canvas>
+          </div>
+        </div>
+
+        <div class="table-container margin-top-30">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Motorista</th>
+                <th>Viagens</th>
+                <th>Distância (km)</th>
+                <th>Concluídas</th>
+                <th>Taxa de Conclusão (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of driversTable; track row.driver) {
+                <tr>
+                  <td><strong>{{ row.driver }}</strong></td>
+                  <td>{{ row.trips }}</td>
+                  <td>{{ row.distance | number:'1.1-1' }} km</td>
+                  <td>{{ row.completed }}</td>
+                  <td>
+                    <span class="rate-badge" [class.high]="row.completionRate >= 80" [class.mid]="row.completionRate < 80 && row.completionRate >= 50" [class.low]="row.completionRate < 50">
+                      {{ row.completionRate }}%
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Trends Tab -->
+      <div [style.display]="activeTab() === 'trends' ? 'block' : 'none'">
+        <h3>Tendências ao Longo do Tempo</h3>
+        
+        <div class="charts-double-row">
+          <div class="chart-container">
+            <h4>Viagens ao Longo do Tempo</h4>
+            <div class="chart-wrapper">
+              <canvas id="trendTripsChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-container">
+            <h4>Distância Percorrida ao Longo do Tempo</h4>
+            <div class="chart-wrapper">
+              <canvas id="trendDistanceChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-container margin-top-30">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Viagens</th>
+                <th>Distância (km)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of dailyTable; track row.date) {
+                <tr>
+                  <td>{{ row.date }}</td>
+                  <td>{{ row.trips }}</td>
+                  <td>{{ row.distance | number:'1.1-1' }} km</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Export Action -->
+    <div class="export-actions border-top border-dark border-1 margin-top-30 padding-top-20">
+      <button class="btn btn-primary" (click)="exportReportCsv()">
+        📥 Baixar Relatório Completo (CSV)
+      </button>
+    </div>
+
+  </div>
+
+}

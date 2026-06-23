@@ -1,0 +1,60 @@
+<div class="page-header">
+  <div>
+    <h1>📊 Dashboard</h1>
+    <p class="subtitle">Bem-vindo ao Sistema de Gestão de Frota</p>
+  </div>
+</div>
+
+@if (loading()) {
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Carregando indicadores...</p>
+  </div>
+} @else {
+  <div class="metrics-grid">
+    <div class="metric-card blue">
+      <div class="card-icon">🚙</div>
+      <div class="card-content">
+        <h3>Veículos Totais</h3>
+        <span class="value">{{ totalVehicles() }}</span>
+      </div>
+    </div>
+
+    <div class="metric-card green">
+      <div class="card-icon">✅</div>
+      <div class="card-content">
+        <h3>Veículos Ativos</h3>
+        <span class="value">{{ activeVehicles() }}</span>
+      </div>
+    </div>
+
+    <div class="metric-card purple">
+      <div class="card-icon">👨‍✈️</div>
+      <div class="card-content">
+        <h3>Motoristas Cadastrados</h3>
+        <span class="value">{{ totalDrivers() }}</span>
+      </div>
+    </div>
+
+    <div class="metric-card orange">
+      <div class="card-icon">🗺️</div>
+      <div class="card-content">
+        <h3>Viagens em Andamento</h3>
+        <span class="value">{{ activeTrips() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-body">
+    <div class="card-panel">
+      <h2>Atividade Recente</h2>
+      <div class="info-banner">
+        <span class="info-icon">ℹ️</span>
+        <div class="info-text">
+          <strong>Recurso de Auditoria</strong>
+          <p>O registro e histórico de auditoria do sistema de frota será integrado nesta seção em breve.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+}
