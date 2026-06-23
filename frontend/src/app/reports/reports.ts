@@ -30,12 +30,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
   driversTable: any[] = [];
   dailyTable: any[] = [];
 
-  private statusChart: Chart | null = null;
-  private vehicleTripsChart: Chart | null = null;
-  private vehicleDistanceChart: Chart | null = null;
-  private driverTripsChart: Chart | null = null;
-  private dailyTripsChart: Chart | null = null;
-  private dailyDistanceChart: Chart | null = null;
+  private statusChart: any = null;
+  private vehicleTripsChart: any = null;
+  private vehicleDistanceChart: any = null;
+  private driverTripsChart: any = null;
+  private dailyTripsChart: any = null;
+  private dailyDistanceChart: any = null;
 
   ngOnInit(): void {
     const today = new Date();
