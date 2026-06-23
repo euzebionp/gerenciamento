@@ -6,6 +6,7 @@ import { VehiclesComponent } from './vehicles/vehicles';
 import { DriversComponent } from './drivers/drivers';
 import { TripsComponent } from './trips/trips';
 import { ReportsComponent } from './reports/reports';
+import { AdminComponent } from './admin/admin';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -20,7 +21,8 @@ export const routes: Routes = [
       { path: 'vehicles', component: VehiclesComponent },
       { path: 'drivers', component: DriversComponent },
       { path: 'trips', component: TripsComponent },
-      { path: 'reports', component: ReportsComponent }
+      { path: 'reports', component: ReportsComponent },
+      { path: 'admin', component: AdminComponent }
     ]
   },
   { path: '**', redirectTo: '' }

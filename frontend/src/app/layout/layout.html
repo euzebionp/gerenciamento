@@ -35,6 +35,12 @@
         <span class="nav-icon">📈</span>
         <span class="nav-label">Relatórios</span>
       </a>
+      @if (role === 'ADMIN') {
+        <a routerLink="/admin" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Administração</span>
+        </a>
+      }
     </nav>
 
     <div class="sidebar-footer">

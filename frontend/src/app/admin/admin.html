@@ -1,0 +1,204 @@
+<div class="page-header">
+  <div>
+    <h1>⚙️ Administração</h1>
+    <p class="subtitle">Gerenciamento de usuários e segurança do sistema</p>
+  </div>
+</div>
+
+<div class="tabs-nav">
+  <button
+    class="tab-btn"
+    [class.active]="activeTab() === 'users'"
+    (click)="setTab('users')"
+  >
+    Usuários
+  </button>
+  <button
+    class="tab-btn"
+    [class.active]="activeTab() === 'create'"
+    (click)="setTab('create')"
+  >
+    Novo Usuário
+  </button>
+  <button
+    class="tab-btn"
+    [class.active]="activeTab() === 'password'"
+    (click)="setTab('password')"
+  >
+    Alterar Senha
+  </button>
+</div>
+
+@if (successMessage()) {
+  <div class="alert success-alert">
+    <span class="alert-icon">✅</span>
+    <span class="alert-text">{{ successMessage() }}</span>
+    <button class="alert-close" (click)="clearMessages()">×</button>
+  </div>
+}
+
+@if (errorMessage()) {
+  <div class="alert error-alert">
+    <span class="alert-icon">❌</span>
+    <span class="alert-text">{{ errorMessage() }}</span>
+    <button class="alert-close" (click)="clearMessages()">×</button>
+  </div>
+}
+
+<div class="tab-content-panel">
+
+  <!-- Users List Tab -->
+  @if (activeTab() === 'users') {
+    <div class="panel-section">
+      <h2>Usuários do Sistema</h2>
+
+      @if (loading()) {
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Carregando usuários...</p>
+        </div>
+      } @else if (users().length === 0) {
+        <div class="empty-state">
+          <span class="empty-icon">👤</span>
+          <p>Nenhum usuário cadastrado.</p>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuário</th>
+                <th>Perfil</th>
+                <th>Criado em</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of users(); track u.id) {
+                <tr>
+                  <td>{{ u.id }}</td>
+                  <td><strong>{{ u.username }}</strong></td>
+                  <td>
+                    <span class="role-badge" [class.admin-role]="u.role === 'ADMIN'">
+                      {{ u.role }}
+                    </span>
+                  </td>
+                  <td>{{ u.createdAt ? (u.createdAt | date:'dd/MM/yyyy') : '-' }}</td>
+                  <td>
+                    @if (u.username !== 'admin') {
+                      @if (confirmDeleteId() === u.id) {
+                        <div class="confirm-delete">
+                          <span>Excluir {{ u.username }}?</span>
+                          <button class="btn btn-sm btn-danger" (click)="onDeleteUser(u.id)">Sim</button>
+                          <button class="btn btn-sm btn-secondary" (click)="confirmDeleteId.set(null)">Não</button>
+                        </div>
+                      } @else {
+                        <button class="btn btn-sm btn-danger-outline" (click)="confirmDeleteId.set(u.id)">
+                          Excluir
+                        </button>
+                      }
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Create User Tab -->
+  @if (activeTab() === 'create') {
+    <div class="panel-section max-width-500">
+      <h2>Novo Usuário</h2>
+      <form (ngSubmit)="onCreateUser()" class="standard-form">
+        <div class="form-group">
+          <label for="new-username">Nome de usuário *</label>
+          <input
+            type="text"
+            id="new-username"
+            name="newUsername"
+            [(ngModel)]="newUsername"
+            required
+            placeholder="E.g. joao"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="new-password">Senha *</label>
+          <input
+            type="password"
+            id="new-password"
+            name="newPassword"
+            [(ngModel)]="newPassword"
+            required
+            placeholder="Mínimo 4 caracteres"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="new-role">Perfil</label>
+          <select id="new-role" name="newRole" [(ngModel)]="newRole">
+            <option value="USER">Usuário</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Criar Usuário</button>
+      </form>
+    </div>
+  }
+
+  <!-- Change Password Tab -->
+  @if (activeTab() === 'password') {
+    <div class="panel-section max-width-500">
+      <h2>Alterar Senha</h2>
+      <p class="section-desc">Altere sua senha de acesso ao sistema.</p>
+
+      <form (ngSubmit)="onChangePassword()" class="standard-form">
+        <div class="form-group">
+          <label for="old-password">Senha atual *</label>
+          <input
+            type="password"
+            id="old-password"
+            name="oldPassword"
+            [(ngModel)]="oldPassword"
+            required
+            placeholder="Digite sua senha atual"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="change-new-password">Nova senha *</label>
+          <input
+            type="password"
+            id="change-new-password"
+            name="changeNewPassword"
+            [(ngModel)]="changeNewPassword"
+            required
+            placeholder="Mínimo 4 caracteres"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="change-confirm-password">Confirmar nova senha *</label>
+          <input
+            type="password"
+            id="change-confirm-password"
+            name="changeConfirmPassword"
+            [(ngModel)]="changeConfirmPassword"
+            required
+            placeholder="Repita a nova senha"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Alterar Senha</button>
+      </form>
+    </div>
+  }
+
+</div>
